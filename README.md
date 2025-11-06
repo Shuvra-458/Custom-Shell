@@ -21,6 +21,10 @@ No setup needed — just run:
 ```
 docker run -it shuvra458/custom-shell:latest
 ```
+If using Windows command prompt/ Powershell, run using this command:
+```
+docker run -it --init --privileged shuvra458/custom-shell:latest
+```
 
 ---
 

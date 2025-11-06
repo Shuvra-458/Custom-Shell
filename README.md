@@ -123,6 +123,11 @@ custom-shell/
 ```
 
 ---
+## Working Images
+<img width="1482" height="755" alt="image" src="https://github.com/user-attachments/assets/e7a012da-8ead-4259-9e5d-6dc07332723e" />
+
+<img width="1460" height="693" alt="Screenshot 2025-11-06 101247" src="https://github.com/user-attachments/assets/81ea6aad-faf2-41b6-a2b2-834ac31136c8" />
+
 
 ## 🤝 Contributing
 

@@ -1,6 +1,6 @@
 // src/jobs.cpp
 #include "jobs.h"
-#include "shell.h"   // brings in extern pid_t shell_pgid
+#include "shell.h" 
 
 #include <bits/stdc++.h>
 #include <sys/types.h>
@@ -15,7 +15,6 @@ struct Job { pid_t pgid; string cmdline; bool stopped; bool background; int id;}
 static vector<Job> jobs;
 static int next_job_id = 1;
 
-// Helper: find job index by pgid (returns -1 if not found)
 static int find_job_index_by_pgid(pid_t pgid) {
     for (size_t i = 0; i < jobs.size(); ++i) {
         if (jobs[i].pgid == pgid) return (int)i;
@@ -23,23 +22,20 @@ static int find_job_index_by_pgid(pid_t pgid) {
     return -1;
 }
 
-// SIGCHLD handler: mark job states, reap terminated children
 static void sigchld_handler(int) {
     int saved = errno;
     int status;
     pid_t pid;
 
-    // Reap children non-blocking and update job table.
+
     // Use WNOHANG | WUNTRACED | WCONTINUED so we learn about stops/continues too.
     while ((pid = waitpid(-1, &status, WNOHANG | WUNTRACED | WCONTINUED)) > 0) {
         pid_t pg = pid;
-        // getpgid might fail for already-dead processes; if so, keep pid as pgid fallback.
         pid_t g = getpgid(pid);
         if (g > 0) pg = g;
 
         int idx = find_job_index_by_pgid(pg);
         if (idx < 0) {
-            // no job entry (could be very short-lived child) — continue
             continue;
         }
 
@@ -47,17 +43,13 @@ static void sigchld_handler(int) {
 
         if (WIFSTOPPED(status)) {
             j.stopped = true;
-            // do not reap here - we only mark stopped
         } else if (WIFCONTINUED(status)) {
             j.stopped = false;
         } else if (WIFEXITED(status) || WIFSIGNALED(status)) {
-            // Child exited or was killed: mark finished by setting pgid = -1
-            // Do not erase immediately; parent code will call reap_finished_jobs()
             j.pgid = -1;
         }
     }
 
-    // If waitpid returned -1 (no more children) or 0, just restore errno and return
     errno = saved;
 }
 
@@ -106,7 +98,7 @@ void bring_job(int id, bool foreground){
                 // Give terminal to job group
                 if (tcsetpgrp(STDIN_FILENO, j.pgid) < 0) perror("tcsetpgrp (to job)");
 
-                // Wait for the job group's state changes (exit/stop)
+                
                 int status = 0;
                 pid_t w;
                 do {
@@ -118,7 +110,7 @@ void bring_job(int id, bool foreground){
                     }
                 } while (w > 0 && !WIFEXITED(status) && !WIFSIGNALED(status) && !WIFSTOPPED(status));
 
-                // Restore terminal to shell's pgid (use shell_pgid from shell.h)
+                
                 if (tcsetpgrp(STDIN_FILENO, shell_pgid) < 0) perror("tcsetpgrp (restore to shell)");
             }
             return;

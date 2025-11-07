@@ -161,7 +161,6 @@ void exec_pipeline(vector<Command> &pipeline, const string &rawline) {
         }
 
         // Wait for the foreground process group to either exit or stop.
-        // Use a loop so we wait for the whole process group, not just one child.
         int status = 0;
         pid_t w;
         do {
@@ -178,8 +177,7 @@ void exec_pipeline(vector<Command> &pipeline, const string &rawline) {
             perror("tcsetpgrp (restore to shell)");
         }
 
-        // If job was stopped, mark it as stopped (jobs SIGCHLD handler also updates this)
-        // Reap/cleanup finished jobs
+        // If job was stopped, mark it as stopped
     } else {
         cout << "[" << get_job_id_by_pgid(pgid) << "] " << pgid << "\n";
     }

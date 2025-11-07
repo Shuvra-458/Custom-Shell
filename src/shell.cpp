@@ -24,12 +24,12 @@ static void init_shell()
 {
     shell_terminal = STDIN_FILENO;
 
-    // Put shell in its own process group
+    
     shell_pgid = getpid();
     if (setpgid(shell_pgid, shell_pgid) < 0)
         perror("setpgid");
 
-    // Take control of terminal
+   
     tcsetpgrp(shell_terminal, shell_pgid);
 
     // Install handlers
